@@ -1,0 +1,55 @@
+{
+  "name": "commit-intent-detector",
+  "displayName": "Commit Intent Detector",
+  "description": "Automatically predicts the intent of your Git commits using AI, helping you write accurate commit messages effortlessly.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.107.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "commit-intent-detector.detect",
+        "title": "Detect Commit Intent"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.107.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.39.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "openai": "^6.15.0",
+    "simple-git": "^3.30.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mohammed-3tef/Commit_Intent_Detector.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Mohammed-3tef/Commit_Intent_Detector/issues"
+  },
+  "homepage": "https://github.com/Mohammed-3tef/Commit_Intent_Detector#readme"
+}
