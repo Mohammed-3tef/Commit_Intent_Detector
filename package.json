@@ -1,28 +1,73 @@
 {
   "name": "commit-intent-detector",
   "displayName": "Commit Intent Detector",
-  "description": "Automatically predicts the intent of your Git commits using AI, helping you write accurate commit messages effortlessly.",
+  "description": "Automatically detects commit intent when you save files using an external backend API, showing notifications with predicted intent categories.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.107.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Developer Tools"
   ],
-  "activationEvents": [],
+  "keywords": [
+    "git",
+    "commit",
+    "intent",
+    "analysis",
+    "automation",
+    "developer-tools"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "commit-intent-detector.detect",
-        "title": "Detect Commit Intent"
+    "configuration": {
+      "title": "Commit Intent Detector",
+      "properties": {
+        "commitIntentDetector.apiUrl": {
+          "type": "string",
+          "default": "http://commitintentdetector.runasp.net/api/Commit/analyze",
+          "description": "The URL of the backend API endpoint for commit intent analysis"
+        },
+        "commitIntentDetector.timeout": {
+          "type": "number",
+          "default": 30000,
+          "description": "Timeout in milliseconds for API requests",
+          "minimum": 1000,
+          "maximum": 300000
+        },
+        "commitIntentDetector.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable commit intent detection"
+        },
+        "commitIntentDetector.debounceDelay": {
+          "type": "number",
+          "default": 1000,
+          "description": "Delay in milliseconds before processing file saves (prevents rapid API calls)",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "commitIntentDetector.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show status bar indicator during analysis"
+        },
+        "commitIntentDetector.allowInsecureSSL": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow insecure SSL certificates (self-signed certificates). WARNING: Only use this for development with localhost. Disables SSL certificate verification."
+        }
       }
-    ]
+    }
   },
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -33,9 +78,8 @@
     "eslint": "^9.39.1"
   },
   "dependencies": {
-    "dotenv": "^17.2.3",
-    "openai": "^6.15.0",
-    "simple-git": "^3.30.0"
+    "node-fetch": "^3.3.2",
+    "undici": "^6.0.0"
   },
   "directories": {
     "test": "test"
@@ -44,7 +88,6 @@
     "type": "git",
     "url": "git+https://github.com/Mohammed-3tef/Commit_Intent_Detector.git"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
