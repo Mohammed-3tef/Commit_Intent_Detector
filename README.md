@@ -2,7 +2,7 @@
 
 Automatically detect the intent of your code changes when saving files. This extension analyzes git diffs and predicts whether your changes represent a bug fix, new feature, refactor, risky commit, or documentation update.
 
-![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.107.0+-green.svg)
 
 ## Screenshots
@@ -99,16 +99,6 @@ Supported intents: `Bug Fix`, `Feature`, `Refactor`, `Risky Commit`, `Documentat
 - Binary files are excluded
 - Large diffs (>5MB) are skipped
 - Untracked files are ignored
-
-## Release Notes
-
-### 0.0.1 (Initial Release)
-
-- Automatic commit intent detection on file save
-- Backend API integration
-- Real-time notifications and status bar indicator
-- Configurable settings with debouncing
-- Smart file filtering and error handling
 
 ## Privacy
 
