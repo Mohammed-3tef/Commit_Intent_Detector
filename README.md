@@ -1,209 +1,128 @@
 # Commit Intent Detector
 
-A VS Code extension that automatically detects the intent of your code changes when saving files. It uses a backend API to analyze git diffs and predict whether your changes represent a **bug fix**, **new feature**, **refactor**, **risky commit**, or **documentation/test update**.
+Automatically detect the intent of your code changes when saving files. This extension analyzes git diffs and predicts whether your changes represent a bug fix, new feature, refactor, risky commit, or documentation update.
 
----
+![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)
+![VS Code](https://img.shields.io/badge/VS%20Code-1.107.0+-green.svg)
+
+## Screenshots
+
+### Intent Detection Notification
+![Notification showing detected commit intent](public/notification.png)
+*Real-time notification appears after saving a file*
 
 ## Features
 
-- **Automatic Detection** – Analyze files automatically when saving
-- **Git Diff Analysis** – Only analyze your actual code changes
-- **Backend API Integration** – Configurable API endpoint for intent detection
-- **Real-time Notifications** – Instant notifications with predicted commit intent
-- **Status Bar Indicator** – Visual feedback during analysis
-- **Smart Filtering** – Skip binary files and ignored directories automatically
-- **Debouncing** – Prevent excessive API calls on rapid file saves
-- **Error Handling** – Graceful handling of network errors and edge cases
+**Automatic Intent Detection**
+- Analyzes git diffs in real-time as you save files
+- Predicts commit type: Bug Fix, Feature, Refactor, Risky Commit, or Documentation
 
----
+**Smart & Fast**
+- Debounced saves prevent excessive API calls
+- Automatically skips binary files and ignored directories
+- Works only in git repositories with tracked files
 
 ## Requirements
 
 - VS Code 1.107.0 or higher
-- Git repository (extension works only in git repositories)
-- Running backend API endpoint (configurable)
-
----
+- Git repository (extension only works in git repos)
+- Backend API endpoint running (configurable)
 
 ## Installation
 
-### From Source
+1. Open VS Code
+2. Go to Extensions (`Ctrl+Shift+X`)
+3. Search for "Commit Intent Detector"
+4. Click Install
 
-1. Clone or download this extension
-2. Open the extension folder in VS Code
-3. Run `npm install` to install dependencies
-4. Press `F5` to launch the Extension Development Host
+## Extension Settings
 
-### Package Installation
+Configure in VS Code settings (`File > Preferences > Settings`):
 
-1. Build the extension: `npm run package`
-2. Install the generated `.vsix` file in VS Code
+* `commitIntentDetector.enabled` - Enable/disable the extension (default: `true`)
+* `commitIntentDetector.apiUrl` - Backend API endpoint (default: `https://localhost:7183/api/Commit/analyze`)
+* `commitIntentDetector.timeout` - API request timeout in ms (default: `30000`)
+* `commitIntentDetector.debounceDelay` - Delay before processing saves in ms (default: `1000`)
+* `commitIntentDetector.showStatusBar` - Show status bar indicator (default: `true`)
+* `commitIntentDetector.allowInsecureSSL` - Allow self-signed certificates for development (default: `false`)
 
----
+## How to Use
 
-## Configuration
-
-Configure via VS Code settings (File > Preferences > Settings > search "Commit Intent Detector").
-
-### Key Settings
-
-- **`commitIntentDetector.apiUrl`** – Backend API endpoint (default: `https://localhost:7183/api/Commit/analyze`)
-- **`commitIntentDetector.timeout`** – API request timeout in ms (default: 30000)
-- **`commitIntentDetector.enabled`** – Enable/disable detection (default: true)
-- **`commitIntentDetector.debounceDelay`** – Delay before processing saves (default: 1000ms)
-- **`commitIntentDetector.showStatusBar`** – Show status bar indicator (default: true)
-- **`commitIntentDetector.allowInsecureSSL`** – Allow self-signed certificates (development only)
-
-### Backend API Format
-
-**Request**:
-```json
-{
-  "diff": "git diff output string"
-}
-````
-
-**Response**:
-
-```json
-{
-  "intent": "Bug Fix"
-}
-```
-
----
-
-## Usage
-
-1. Work in a git repository
+1. Open a git repository in VS Code
 2. Make changes to a tracked file
-3. Save the file
-4. Wait briefly (debounce delay)
-5. Receive a notification showing predicted commit intent
-6. Status bar shows analysis progress and result
+3. Save the file (`Ctrl+S` or `Cmd+S`)
+4. See the detected commit intent in the notification
 
-> The extension automatically activates on VS Code startup; no manual commands needed.
+The extension works automatically - no commands needed!
 
----
+## Backend API Setup
 
-## How It Works
+The extension requires a running backend API. Your API should accept this format:
 
-1. **File Save Event** – Triggered when saving
-2. **Git Repository Check** – Confirms file is in git repo
-3. **Git Diff Extraction** – Captures only the changes
-4. **API Request** – Sends diff to backend
-5. **Intent Detection** – Backend predicts commit intent
-6. **Notification** – Shows intent via popup and status bar
-
----
-
-## Project Structure
-
-```
-commit-intent-detector/
-├── extension.js          # Main extension entry point
-├── package.json          # Extension manifest
-├── README.md             # Documentation
-├── CHANGELOG.md          # Version history
-└── test/                 # Test files
+**Request:**
+```json
+POST /api/Commit/analyze
+{
+  "diff": "+ // Added a new feature: subtraction support\n+ function subtract(a, b) {\n+   return a - b;\n+ }"
+}
 ```
 
----
-
-## Development
-
-### Running
-
-1. Open the folder in VS Code
-2. Press `F5` to launch Extension Development Host
-3. Make changes and save to test intent detection
-
-### Debugging
-
-* Set breakpoints in `extension.js`
-* Check logs in Debug Console and Output panel
-
-### Building
-
-```bash
-npm install
-npm run package
+**Response:**
+```json
+{
+    "intent": "Intent: Feature\nMessage: Add subtraction support to the calculator"
+}
 ```
 
-Generates a `.vsix` file to install in VS Code.
-
----
-
-## File Filtering
-
-Skips automatically:
-
-* Binary files (images, executables, archives, etc.)
-* Common ignore directories (`node_modules`, `.git`, `dist`, etc.)
-* Untracked git files
-* Files with no changes (empty diff)
-* Non-file documents (untitled files)
-
----
-
-## Error Handling
-
-* **Backend unreachable** – Clear error message with API URL
-* **Network timeout** – Configurable timeout
-* **Invalid API response** – Validates response format
-* **Not a git repository / Empty diff** – Skipped silently
-* **Large diffs (>5MB)** – Skipped to prevent performance issues
-
----
-
-## Known Limitations
-
-* Works only in git repositories
-* Requires running backend API
-* Large diffs skipped
-* Binary files excluded
-* Only analyzes tracked git files
-
----
+Supported intents: `Bug Fix`, `Feature`, `Refactor`, `Risky Commit`, `Documentation`, `Test`
 
 ## Troubleshooting
 
-### SSL Certificate Errors
+**No notifications appearing?**
+- Make sure you're in a git repository
+- Check that the file has tracked changes
+- Verify `commitIntentDetector.enabled` is `true`
 
-* **Development (Self-Signed)**: Enable `commitIntentDetector.allowInsecureSSL` in settings
-* **Production**: Use a trusted SSL certificate
+**SSL certificate errors?**
+- For development: Enable `commitIntentDetector.allowInsecureSSL`
+- For production: Use a valid SSL certificate
 
-### Installation Issues
+**API connection failed?**
+- Verify the backend service is running
+- Check `commitIntentDetector.apiUrl` is correct
+- Test the endpoint manually
 
-* Missing `undici` module: run `npm install` in extension directory
+## Known Limitations
 
----
+- Only works in git repositories
+- Requires a running backend API
+- Binary files are excluded
+- Large diffs (>5MB) are skipped
+- Untracked files are ignored
 
 ## Release Notes
 
-### 0.0.1
+### 0.0.1 (Initial Release)
 
-* Automatic commit intent detection on file save
-* Backend API integration
-* Real-time notifications
-* Status bar indicator
-* Configurable settings
-* Smart file filtering
-* Debouncing for performance
-* Comprehensive error handling
+- Automatic commit intent detection on file save
+- Backend API integration
+- Real-time notifications and status bar indicator
+- Configurable settings with debouncing
+- Smart file filtering and error handling
 
----
+## Privacy
+
+This extension sends git diff content to your configured backend API for analysis. No data is sent to third parties.
+
+## Support
+
+- Report issues: [GitHub Issues](https://github.com/Mohammed-3tef/Commit_Intent_Detector/issues)
+- Source code: [GitHub Repository](https://github.com/Mohammed-3tef/Commit_Intent_Detector)
 
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) file for details
 
 ---
 
-## Contributing
-
-Contributions welcome! Submit a Pull Request on [GitHub](https://github.com/Mohammed-3tef/Commit_Intent_Detector).
-
----
-
-**Enjoy coding with better commit intent awareness!**
+**Enjoy better commit awareness!** 🚀
