@@ -7,8 +7,8 @@
     "vscode": "^1.107.0"
   },
   "categories": [
-    "Other",
-    "Developer Tools"
+    "Developer Tools",
+    "Other"
   ],
   "keywords": [
     "git",
@@ -16,7 +16,8 @@
     "intent",
     "analysis",
     "automation",
-    "developer-tools"
+    "developer-tools",
+    "productivity"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -88,8 +89,11 @@
     "type": "git",
     "url": "git+https://github.com/Mohammed-3tef/Commit_Intent_Detector.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Mohammed Atef",
+  "license": "MIT",
+  "publisher": "MohammedAtef",
+  "markdown": "github",
+  "icon": "public/icon512.png",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/Mohammed-3tef/Commit_Intent_Detector/issues"
