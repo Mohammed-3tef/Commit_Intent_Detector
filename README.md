@@ -5,9 +5,11 @@ Automatically detect the intent of your code changes when saving files. This ext
 ![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.107.0+-green.svg)
 
-## Screenshots
+## Screenshots & Demo
 
-### Intent Detection Notification
+<video src="public/demo.mp4" autoplay loop muted playsinline width="100%"></video>
+*Live demo showing Commit Intent Detector analyzing changes and displaying the detected intent in real time.*
+
 ![Notification showing detected commit intent](public/notification.png)
 *Real-time notification appears after saving a file*
 
