@@ -1,8 +1,8 @@
 {
   "name": "commit-intent-detector",
   "displayName": "Commit Intent Detector",
-  "description": "Automatically detects commit intent when you save files using an external backend API, showing notifications with predicted intent categories.",
-  "version": "1.0.2",
+  "description": "Automatically analyzes your code changes on file save and suggests a clear, professional commit name (Bug Fix, Feature, Refactor, Docs, Tests) using an external backend API.",
+  "version": "1.0.3",
   "galleryBanner": {
     "color": "#001d3d",
     "theme": "dark"
@@ -11,16 +11,20 @@
     "vscode": "^1.107.0"
   },
   "categories": [
-    "Other"
+    "Source Control",
+    "Productivity"
   ],
   "keywords": [
     "git",
     "commit",
-    "intent",
-    "analysis",
+    "commit-name",
+    "commit-message",
+    "commit-helper",
     "automation",
+    "productivity",
+    "source-control",
     "developer-tools",
-    "productivity"
+    "git-workflow"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -33,7 +37,7 @@
         "commitIntentDetector.apiUrl": {
           "type": "string",
           "default": "http://commitintentdetector.runasp.net/api/Commit/analyze",
-          "description": "The URL of the backend API endpoint for commit intent analysis"
+          "description": "The URL of the backend API endpoint for commit analysis and commit name suggestion"
         },
         "commitIntentDetector.timeout": {
           "type": "number",
@@ -45,24 +49,24 @@
         "commitIntentDetector.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Enable or disable commit intent detection"
+          "description": "Enable or disable automatic commit name detection"
         },
         "commitIntentDetector.debounceDelay": {
           "type": "number",
           "default": 1000,
-          "description": "Delay in milliseconds before processing file saves (prevents rapid API calls)",
+          "description": "Delay in milliseconds before processing file saves to prevent rapid API calls",
           "minimum": 0,
           "maximum": 10000
         },
         "commitIntentDetector.showStatusBar": {
           "type": "boolean",
           "default": true,
-          "description": "Show status bar indicator during analysis"
+          "description": "Show status bar indicator during commit analysis"
         },
         "commitIntentDetector.allowInsecureSSL": {
           "type": "boolean",
           "default": false,
-          "description": "Allow insecure SSL certificates (self-signed certificates). WARNING: Only use this for development with localhost. Disables SSL certificate verification."
+          "description": "Allow insecure SSL certificates (development only). Disables SSL certificate verification."
         }
       }
     }
