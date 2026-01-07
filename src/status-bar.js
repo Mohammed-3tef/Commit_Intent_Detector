@@ -14,7 +14,7 @@ let statusBarItem = null;
 function initializeStatusBar(context) {
   if (!statusBarItem) {
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    statusBarItem.tooltip = 'Commit Intent Detector';
+    statusBarItem.tooltip = 'CommiTect';
     context.subscriptions.push(statusBarItem);
   }
 }

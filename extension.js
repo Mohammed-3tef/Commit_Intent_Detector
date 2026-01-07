@@ -1,6 +1,6 @@
 /**
  * Main extension entry point
- * Commit Intent Detector - Automatically detects commit intent from code changes
+ * CommiTect - Automatically detects commit intent from code changes
  */
 
 const vscode = require('vscode');
@@ -14,10 +14,10 @@ const { handleFileSave, clearDebounceTimer } = require('./src/file-handler');
  * @param {vscode.ExtensionContext} context - The extension context
  */
 function activate(context) {
-  console.log('Commit Intent Detector extension is now active!');
+  console.log('CommiTect extension is now active!');
 
   // Notification on startup
-  vscode.window.showInformationMessage('Commit Intent Detector is active!');
+  vscode.window.showInformationMessage('CommiTect is active!');
   
   // Initialize fetch
   initializeFetch().catch(err => {
@@ -51,7 +51,7 @@ function activate(context) {
  * Deactivate the extension
  */
 function deactivate() {
-  console.log('Commit Intent Detector extension is now deactivated.');
+  console.log('CommiTect extension is now deactivated.');
   
   // Clear any pending debounce timer
   clearDebounceTimer();

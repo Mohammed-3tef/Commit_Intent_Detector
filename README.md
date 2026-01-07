@@ -1,15 +1,11 @@
-# Commit Intent Detector
+# CommiTect – Smart Commit Name Suggestion
 
 Automatically analyzes your code changes on file save and suggests a clear, professional commit name (Bug Fix, Feature, Refactor, Docs, Tests) using an external backend API.
 
-![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.107.0+-green.svg)
 
 ## Screenshots & Demo
-
-<img src="public/demo.gif" alt="Demo Gif" width="100%"/>
-
-*Live demo showing Commit Intent Detector analyzing changes and displaying the detected intent in real time.*
 
 ![Notification showing detected commit intent](public/notification.png)
 *Real-time notification appears after saving a file*
@@ -35,7 +31,7 @@ Automatically analyzes your code changes on file save and suggests a clear, prof
 
 1. Open VS Code
 2. Go to Extensions (`Ctrl+Shift+X`)
-3. Search for "Commit Intent Detector"
+3. Search for "CommiTect – Smart Commit Name Suggestion"
 4. Click Install
 
 ## Extension Settings

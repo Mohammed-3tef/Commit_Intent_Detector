@@ -1,8 +1,8 @@
 {
   "name": "commit-intent-detector",
-  "displayName": "Commit Intent Detector",
+  "displayName": "CommiTect – Smart Commit Name Suggestion",
   "description": "Automatically analyzes your code changes on file save and suggests a clear, professional commit name (Bug Fix, Feature, Refactor, Docs, Tests) using an external backend API.",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "galleryBanner": {
     "color": "#001d3d",
     "theme": "dark"
@@ -31,7 +31,7 @@
   "main": "./extension.js",
   "contributes": {
     "configuration": {
-      "title": "Commit Intent Detector",
+      "title": "CommiTect Configuration",
       "properties": {
         "commitIntentDetector.apiUrl": {
           "type": "string",

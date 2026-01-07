@@ -30,7 +30,7 @@ async function handleFileSave(document) {
   const config = getConfig();
   
   if (!config.enabled) {
-    console.log('Commit Intent Detector is disabled');
+    console.log('CommiTect is disabled');
     return;
   }
 
