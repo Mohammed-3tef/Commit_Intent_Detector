@@ -4,7 +4,7 @@
 
 const vscode = require('vscode');
 const { STATUS_BAR_DISPLAY_DURATION } = require('./constants');
-const { updateStatusBar, hideStatusBar } = require('./status-bar');
+const { updateStatusBar, resetStatusBar } = require('./status-bar');
 
 /**
  * Parse the intent string into type and message
@@ -33,14 +33,21 @@ function parseIntent(intent) {
  * @param {string} intentMessage - The intent message
  */
 function showIntentNotification(intentType, intentMessage) {
-  const message = `${intentType}: ${intentMessage}`;
-  vscode.window.showInformationMessage(message, 'Copy')
-    .then(selection => {
-      if (selection === 'Copy') {
-        vscode.env.clipboard.writeText(message);
-        vscode.window.showInformationMessage('Copied to clipboard');
-      }
-    });
+  const fullMessage = `${intentType}: ${intentMessage}`;
+  
+  vscode.window.showInformationMessage(
+    `${fullMessage}`, 
+    'Copy Message', 
+    'Copy Full'
+  ).then(selection => {
+    if (selection === 'Copy Message') {
+      vscode.env.clipboard.writeText(intentMessage);
+      vscode.window.showInformationMessage('Commit message copied to clipboard!');
+    } else if (selection === 'Copy Full') {
+      vscode.env.clipboard.writeText(fullMessage);
+      vscode.window.showInformationMessage('Full commit message copied to clipboard!');
+    }
+  });
 }
 
 /**
@@ -52,16 +59,16 @@ function processAndDisplayIntent(intent) {
   
   if (type && message) {
     showIntentNotification(type, message);
+    updateStatusBar(`${type}: ${message}`, 'commitect.generateCommitMessage');
   } else {
     // Fallback to showing raw intent if parsing fails
-    showIntentNotification('Intent', intent);
+    showIntentNotification('Commit Intent', intent);
+    updateStatusBar(`$(check) ${intent}`, 'commitect.generateCommitMessage');
   }
-
-  updateStatusBar(`$(check) Intent: ${intent}`, undefined);
   
-  // Hide status bar after delay
+  // Reset status bar to default after delay
   setTimeout(() => {
-    hideStatusBar();
+    resetStatusBar();
   }, STATUS_BAR_DISPLAY_DURATION);
 }
 

@@ -1,23 +1,22 @@
 # CommiTect – Smart Commit Name Suggestion
 
-Automatically analyzes your code changes on file save and suggests a clear, professional commit name (Bug Fix, Feature, Refactor, Docs, Tests) using an external backend API.
+Automatically analyzes your code and suggests a clear, professional commit name (Bug Fix, Feature, Refactor, Docs, Tests) using an external backend API.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.107.0+-green.svg)
 
 ## Screenshots & Demo
 
-![Notification showing detected commit intent](public/notification.png)
-*Real-time notification appears after saving a file*
+![Notification showing detected commit message](public/notification.png)
+*Real-time notification*
 
 ## Features
 
 **Automatic Intent Detection**
-- Analyzes git diffs in real-time as you save files
+- Analyzes git diffs
 - Predicts commit type: Bug Fix, Feature, Refactor, Risky Commit, or Documentation
 
 **Smart & Fast**
-- Debounced saves prevent excessive API calls
 - Automatically skips binary files and ignored directories
 - Works only in git repositories with tracked files
 

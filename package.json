@@ -1,7 +1,7 @@
 {
   "name": "commit-intent-detector",
   "displayName": "CommiTect – Smart Commit Name Suggestion",
-  "description": "Automatically analyzes your code changes on file save and suggests a clear, professional commit name (Bug Fix, Feature, Refactor, Docs, Tests) using an external backend API.",
+  "description": "Automatically analyzes your code and suggests a clear, professional commit name (Bug Fix, Feature, Refactor, Docs, Tests) using an external backend API.",
   "version": "1.1.0",
   "galleryBanner": {
     "color": "#001d3d",
@@ -16,27 +16,35 @@
   "keywords": [
     "git",
     "commit",
-    "commit-name",
     "commit-message",
     "commit-helper",
     "automation",
     "productivity",
     "source-control",
     "developer-tools",
-    "git-workflow"
+    "git-workflow",
+    "ai-assistant"
   ],
   "activationEvents": [
     "onStartupFinished"
   ],
   "main": "./extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "commitect.generateCommitMessage",
+        "title": "CommiTect: Generate Commit Message",
+        "category": "Git",
+        "icon": "$(git-commit)"
+      }
+    ],
     "configuration": {
       "title": "CommiTect Configuration",
       "properties": {
         "commitIntentDetector.apiUrl": {
           "type": "string",
           "default": "http://commitintentdetector.runasp.net/api/Commit/analyze",
-          "description": "The URL of the backend API endpoint for commit analysis and commit name suggestion"
+          "description": "The URL of the backend API endpoint for commit analysis"
         },
         "commitIntentDetector.timeout": {
           "type": "number",
@@ -48,19 +56,12 @@
         "commitIntentDetector.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Enable or disable automatic commit name detection"
-        },
-        "commitIntentDetector.debounceDelay": {
-          "type": "number",
-          "default": 1000,
-          "description": "Delay in milliseconds before processing file saves to prevent rapid API calls",
-          "minimum": 0,
-          "maximum": 10000
+          "description": "Enable or disable CommiTect"
         },
         "commitIntentDetector.showStatusBar": {
           "type": "boolean",
           "default": true,
-          "description": "Show status bar indicator during commit analysis"
+          "description": "Show status bar button for generating commit messages"
         },
         "commitIntentDetector.allowInsecureSSL": {
           "type": "boolean",

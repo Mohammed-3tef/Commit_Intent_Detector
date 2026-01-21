@@ -4,94 +4,165 @@
 
 const { exec } = require('child_process');
 const { promisify } = require('util');
-const path = require('path');
 const { MAX_DIFF_SIZE, GIT_COMMAND_TIMEOUT } = require('./constants');
 
 const execAsync = promisify(exec);
 
 /**
- * Check if a file is in a git repository
- * @param {string} filePath - The file path to check
- * @returns {Promise<boolean>} True if the file is in a git repository
+ * Get the git repository root for a workspace folder
+ * @param {string} workspacePath - The workspace folder path
+ * @returns {Promise<string|null>} The repository root path, or null if not a git repo
  */
-async function isGitRepository(filePath) {
+async function getGitRepositoryRoot(workspacePath) {
   try {
-    const fileDir = path.dirname(filePath);
-    const { stdout } = await execAsync('git rev-parse --git-dir', {
-      cwd: fileDir,
+    const { stdout } = await execAsync('git rev-parse --show-toplevel', {
+      cwd: workspacePath,
+      timeout: GIT_COMMAND_TIMEOUT,
+      maxBuffer: 1024 * 1024
+    });
+    return stdout.trim();
+  } catch (error) {
+    console.log('Not a git repository:', workspacePath);
+    return null;
+  }
+}
+
+/**
+ * Check if there are any changes in the repository
+ * @param {string} repoRoot - The repository root path
+ * @returns {Promise<boolean>} True if there are changes
+ */
+async function hasChanges(repoRoot) {
+  try {
+    // Check for both staged and unstaged changes
+    const { stdout } = await execAsync('git status --porcelain', {
+      cwd: repoRoot,
       timeout: GIT_COMMAND_TIMEOUT,
       maxBuffer: 1024 * 1024
     });
     return stdout.trim().length > 0;
   } catch (error) {
-    console.log('Not a git repository:', filePath);
+    console.error('Error checking git status:', error);
     return false;
   }
 }
 
 /**
- * Get the git diff for a file
- * @param {string} filePath - The file path to get diff for
- * @returns {Promise<string>} The git diff output, or empty string if no diff
+ * Get all repository changes (both staged and unstaged)
+ * @param {string} repoRoot - The repository root path
+ * @returns {Promise<string>} Combined diff of all changes
  */
-async function getGitDiff(filePath) {
+async function getAllRepositoryDiff(repoRoot) {
   try {
-    const fileDir = path.dirname(filePath);
-    const repoRootResult = await execAsync('git rev-parse --show-toplevel', {
-      cwd: fileDir,
-      timeout: GIT_COMMAND_TIMEOUT,
-      maxBuffer: 1024 * 1024
-    });
-    const repoRoot = repoRootResult.stdout.trim();
+    let combinedDiff = '';
     
-    if (!repoRoot) {
-      console.log('Could not determine git repository root');
-      return '';
-    }
-
-    // Get relative path from repo root, normalizing path separators
-    const relativePath = path.relative(repoRoot, filePath).replace(/\\/g, '/');
-    
-    // Check if file is tracked by git
+    // Get unstaged changes (working directory vs index)
     try {
-      await execAsync(`git ls-files --error-unmatch "${relativePath}"`, {
+      const unstagedResult = await execAsync('git diff', {
+        cwd: repoRoot,
+        timeout: 10000,
+        maxBuffer: MAX_DIFF_SIZE
+      });
+      
+      if (unstagedResult.stdout && unstagedResult.stdout.trim().length > 0) {
+        combinedDiff += '=== UNSTAGED CHANGES ===\n\n';
+        combinedDiff += unstagedResult.stdout;
+        combinedDiff += '\n\n';
+      }
+    } catch (error) {
+      console.log('No unstaged changes or error getting unstaged diff');
+    }
+    
+    // Get staged changes (index vs HEAD)
+    try {
+      const stagedResult = await execAsync('git diff --cached', {
+        cwd: repoRoot,
+        timeout: 10000,
+        maxBuffer: MAX_DIFF_SIZE
+      });
+      
+      if (stagedResult.stdout && stagedResult.stdout.trim().length > 0) {
+        combinedDiff += '=== STAGED CHANGES ===\n\n';
+        combinedDiff += stagedResult.stdout;
+        combinedDiff += '\n\n';
+      }
+    } catch (error) {
+      console.log('No staged changes or error getting staged diff');
+    }
+    
+    // Get untracked files
+    try {
+      const untrackedResult = await execAsync('git ls-files --others --exclude-standard', {
         cwd: repoRoot,
         timeout: GIT_COMMAND_TIMEOUT,
         maxBuffer: 1024 * 1024
       });
+      
+      if (untrackedResult.stdout && untrackedResult.stdout.trim().length > 0) {
+        const untrackedFiles = untrackedResult.stdout.trim().split('\n');
+        combinedDiff += '=== UNTRACKED FILES ===\n\n';
+        combinedDiff += untrackedFiles.join('\n');
+        combinedDiff += '\n\n';
+      }
     } catch (error) {
-      console.log('File not tracked by git:', filePath);
-      return '';
+      console.log('No untracked files or error getting untracked files');
     }
-
-    // Get diff for the file
-    const diffResult = await execAsync(`git diff -- "${relativePath}"`, {
-      cwd: repoRoot,
-      timeout: 10000,
-      maxBuffer: MAX_DIFF_SIZE
-    });
     
-    const diff = diffResult.stdout;
-    
-    // Check diff size
-    if (diff.length > MAX_DIFF_SIZE) {
-      console.warn('Diff too large, skipping:', diff.length, 'bytes');
-      return '';
+    // Check combined diff size
+    if (combinedDiff.length > MAX_DIFF_SIZE) {
+      console.warn('Combined diff too large:', combinedDiff.length, 'bytes');
+      throw new Error(`Changes are too large (${(combinedDiff.length / 1024 / 1024).toFixed(2)} MB). Maximum size is ${MAX_DIFF_SIZE / 1024 / 1024} MB.`);
     }
-
-    return diff;
+    
+    return combinedDiff.trim();
   } catch (error) {
-    if (error.code === 1) {
-      // Exit code 1 from git diff means no changes
-      console.log('No diff found (file unchanged or not in git):', filePath);
-      return '';
-    }
-    console.error('Error getting git diff:', error);
+    console.error('Error getting repository diff:', error);
     throw error;
   }
 }
 
+/**
+ * Get a summary of changes in the repository
+ * @param {string} repoRoot - The repository root path
+ * @returns {Promise<Object>} Summary of changes
+ */
+async function getChangesSummary(repoRoot) {
+  try {
+    const { stdout } = await execAsync('git status --porcelain', {
+      cwd: repoRoot,
+      timeout: GIT_COMMAND_TIMEOUT,
+      maxBuffer: 1024 * 1024
+    });
+    
+    const lines = stdout.trim().split('\n').filter(line => line.length > 0);
+    const summary = {
+      total: lines.length,
+      modified: 0,
+      added: 0,
+      deleted: 0,
+      renamed: 0,
+      untracked: 0
+    };
+    
+    for (const line of lines) {
+      const status = line.substring(0, 2);
+      if (status.includes('M')) summary.modified++;
+      if (status.includes('A')) summary.added++;
+      if (status.includes('D')) summary.deleted++;
+      if (status.includes('R')) summary.renamed++;
+      if (status.includes('?')) summary.untracked++;
+    }
+    
+    return summary;
+  } catch (error) {
+    console.error('Error getting changes summary:', error);
+    return { total: 0, modified: 0, added: 0, deleted: 0, renamed: 0, untracked: 0 };
+  }
+}
+
 module.exports = {
-  isGitRepository,
-  getGitDiff
+  getGitRepositoryRoot,
+  hasChanges,
+  getAllRepositoryDiff,
+  getChangesSummary
 };

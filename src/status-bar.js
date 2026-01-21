@@ -14,7 +14,7 @@ let statusBarItem = null;
 function initializeStatusBar(context) {
   if (!statusBarItem) {
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    statusBarItem.tooltip = 'CommiTect';
+    statusBarItem.tooltip = 'Click to generate commit message from all repository changes';
     context.subscriptions.push(statusBarItem);
   }
 }
@@ -29,6 +29,10 @@ function updateStatusBar(text, command) {
     statusBarItem.text = text;
     if (command) {
       statusBarItem.command = command;
+      statusBarItem.tooltip = 'Click to generate commit message from all repository changes';
+    } else {
+      statusBarItem.command = undefined;
+      statusBarItem.tooltip = 'CommiTect is working...';
     }
     statusBarItem.show();
   }
@@ -43,8 +47,16 @@ function hideStatusBar() {
   }
 }
 
+/**
+ * Reset status bar to default state
+ */
+function resetStatusBar() {
+  updateStatusBar('$(git-commit) CommiTect', 'commitect.generateCommitMessage');
+}
+
 module.exports = {
   initializeStatusBar,
   updateStatusBar,
-  hideStatusBar
+  hideStatusBar,
+  resetStatusBar
 };

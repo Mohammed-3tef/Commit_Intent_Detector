@@ -1,13 +1,13 @@
 /**
  * Main extension entry point
- * CommiTect - Automatically detects commit intent from code changes
+ * CommiTect - Manual commit message generator from repository changes
  */
 
 const vscode = require('vscode');
 const { initializeFetch } = require('./src/api-client');
 const { getConfig } = require('./src/config');
-const { initializeStatusBar, hideStatusBar } = require('./src/status-bar');
-const { handleFileSave, clearDebounceTimer } = require('./src/file-handler');
+const { initializeStatusBar, updateStatusBar, hideStatusBar } = require('./src/status-bar');
+const { handleManualTrigger } = require('./src/commit-handler');
 
 /**
  * Activate the extension
@@ -17,22 +17,23 @@ function activate(context) {
   console.log('CommiTect extension is now active!');
 
   // Notification on startup
-  vscode.window.showInformationMessage('CommiTect is active!');
+  vscode.window.showInformationMessage('CommiTect is ready! Click the status bar or run the command.');
   
   // Initialize fetch
   initializeFetch().catch(err => {
     console.error('Failed to initialize fetch:', err);
   });
 
-  // Initialize status bar
+  // Initialize status bar with click command
   initializeStatusBar(context);
+  updateStatusBar('$(git-commit) CommiTect', 'commitect.generateCommitMessage');
 
-  // Register file save listener
-  const saveDisposable = vscode.workspace.onDidSaveTextDocument(async (document) => {
-    await handleFileSave(document);
+  // Register manual commit message generation command
+  const generateCommand = vscode.commands.registerCommand('commitect.generateCommitMessage', async () => {
+    await handleManualTrigger();
   });
 
-  context.subscriptions.push(saveDisposable);
+  context.subscriptions.push(generateCommand);
 
   // Listen for configuration changes
   const configDisposable = vscode.workspace.onDidChangeConfiguration(event => {
@@ -40,6 +41,8 @@ function activate(context) {
       console.log('Configuration changed, reloading settings');
       if (!getConfig().showStatusBar) {
         hideStatusBar();
+      } else {
+        updateStatusBar('$(git-commit) CommiTect', 'commitect.generateCommitMessage');
       }
     }
   });
@@ -52,9 +55,6 @@ function activate(context) {
  */
 function deactivate() {
   console.log('CommiTect extension is now deactivated.');
-  
-  // Clear any pending debounce timer
-  clearDebounceTimer();
   
   // Hide status bar
   hideStatusBar();
