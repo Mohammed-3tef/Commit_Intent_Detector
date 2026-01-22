@@ -2,7 +2,7 @@
   "name": "commit-intent-detector",
   "displayName": "CommiTect – Smart Commit Name Suggestion",
   "description": "Automatically analyzes your code and suggests a clear, professional commit name (Bug Fix, Feature, Refactor, Docs, Tests) using an external backend API.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "galleryBanner": {
     "color": "#001d3d",
     "theme": "dark"
@@ -36,6 +36,14 @@
         "title": "CommiTect: Generate Commit Message",
         "category": "Git",
         "icon": "$(git-commit)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "commitect.generateCommitMessage",
+        "key": "shift+c",
+        "mac": "shift+c",
+        "when": "editorTextFocus || !editorFocus"
       }
     ],
     "configuration": {
